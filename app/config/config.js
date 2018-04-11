@@ -46,6 +46,11 @@ var configOptions = {
             "register": baseOprUrl + "/security/register",
             "login": baseOprUrl + '/authentication/form',
         },
+        "statistics":{
+            "timeall": baseOprUrl + "/statistics/time/all",
+            "timeover": baseOprUrl + "/statistics/time/over",
+            "sumover": baseOprUrl + "/statistics/sum/over"
+        }
     },
     "enumDatas": {}
 };

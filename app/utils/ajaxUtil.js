@@ -20,6 +20,15 @@ define('utils/ajaxUtil', [], function() {
             };
             _self._ajaxPost(url, query, callback);
         },
+        staticsDate: function(url,start,end,type,callback) {
+            var _self = this;
+            var query = {
+               startTime:start,
+               endTime:end,
+               type:type
+            };
+            _self._ajaxPost(url, query, callback);
+        },
         search: function(url, where, start, num, callback) {
             var _self = this;
             var search = where == null ? '1=1' : where.trim();

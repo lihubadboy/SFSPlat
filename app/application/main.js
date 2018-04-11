@@ -32,7 +32,10 @@
       //创建事件
       _self._construcEvent();
 
-      _self._queryTotalApply();
+      _self._queryTotalApply(0);
+      _self._queryTotalOver(0);
+       _self._querySumOver(0);
+
     },
     //创建事件
     _construcEvent:function(){
@@ -45,88 +48,362 @@
         });
     },
 
-    _queryTotalApply:function(){
-          // 基于准备好的dom，初始化echarts图表
-    var myChart = echarts.init(document.getElementById('main1'));
-    //var myChart = ec.init(document.getElementById('main'), 'infographic'); //本主题无Y轴标线
-    var option = {
-      title: {
-        text: '全市生产总值(GDP)',
-        subtext: '数据来源:西安市统计局     单位:亿元',
-        textStyle: {
-          fontWeight: 'normal',
-          fontFamily: 'Microsoft YaHei',
-          fontSize: 18,
-          color: '#666'
-        }
-      },
-      tooltip: {
-        show: true,
-        trigger: 'axis'
-      },
-      legend: {
-        bottom: '0',
-        y: 'bottom',
-        data: ['GDP', '第一产业', '第二产业', '第三产业']
-      },
-      toolbox: {
-        show: true,
-        feature: {
-          magicType: {
-            show: true,
-            type: ['bar', 'line']
-          },
-          restore: {
-            show: true
-          }
-        }
-      },
-      //calculable: true,
-      xAxis: [{
-        type: 'category',
-        data: ['2010年', '2011年', '2012年', '2013年', '2014年', '2015年', '2016年', '17年1-3月'],
-        axisLabel: {
-          interval: 0,
-          //横轴信息全部显示
-          rotate: 0
-        }
-      }],
-      yAxis: [{
-        type: 'value',
-        splitArea: {
-          show: true
-        },
-        scale: true,
-        min: 0,
-        max: 8000
-      }],
-      series: [{
-        name: 'GDP',
-        type: 'bar',
-        data: [3241.69, 3862.58, 4369.37, 4884.13, 5474.77, 5810.03,6257.18,1303.18]
-      },
-      {
-        name: '第一产业',
-        type: 'bar',
-        stack: '生产总值',
-        data: [140.06, 173.14, 195.59, 217.76, 214.55, 220.20, 232.01,31.91]
-      },
-      {
-        name: '第二产业',
-        type: 'bar',
-        stack: '生产总值',
-        data: [1409.53, 1697.16, 1893.79, 2117.66, 2205.37, 2165.54,2197.81,432.91]
-      },
-      {
-        name: '第三产业',
-        type: 'bar',
-        stack: '生产总值',
-        data: [1691.91, 1993.91, 2279.99, 2548.71, 3054.85, 3424.29,3827.36,838.36]
-      }]
-    };
-    // 为echarts对象加载数据 
-    myChart.setOption(option);
+    initLineOrBarChart(name,lineChartData,type,title,subtitle){
+      for(var i in lineChartData.series){
+        lineChartData.series[i].type = type;
+      }
+
+       var myChart = echarts.init(document.getElementById(name));
+           var option = {
+                title: {
+                  text: title,
+                  subtext: subtitle,
+                  textStyle: {
+                    fontWeight: 'normal',
+                    fontFamily: 'Microsoft YaHei',
+                    fontSize: 18,
+                    color: '#666'
+                  }
+                },
+                tooltip: {
+                  show: true,
+                  trigger: 'axis'
+                },
+                legend: {
+                  bottom: '0',
+                  y: 'bottom',
+                  data: lineChartData.legend
+                },
+                toolbox: {
+                  show: true,
+                  feature: {
+                    magicType: {
+                      show: true,
+                      type: ['bar', 'line']
+                    },
+                    restore: {
+                      show: true
+                    }
+                  }
+                },
+                //calculable: true,
+                xAxis: [{
+                  type: 'category',
+                  data: lineChartData.xaxis,
+                  axisLabel: {
+                    interval: 0
+                  }
+                }],
+                yAxis: [{
+                  type: 'value',
+                  splitArea: {
+                    show: true
+                  },
+                  scale: true
+                }],
+                series: lineChartData.series
+              };
+          // 为echarts对象加载数据 
+          myChart.setOption(option);
+
     },
+    initPieChart(name,pieChartData,title,subtitle){
+         var myChart = echarts.init(document.getElementById(name));
+           var option = {
+              title: {
+                  text: title,
+                  subtext: subtitle,
+                  textStyle: {
+                    fontWeight: 'normal',
+                    fontFamily: 'Microsoft YaHei',
+                    fontSize: 18,
+                    color: '#666'
+                  }
+                },
+                tooltip: {
+                  show: true,
+                  trigger: 'axis'
+                },
+              tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b} : {c} ({d}%)'
+              },
+              legend: {
+                left: 'center',
+                bottom: '0',
+                data: pieChartData.legend
+              },
+              calculable: true,
+              series: [
+                {
+                  name: '数量(占比)',
+                  type: 'pie',
+                  label: {
+                      normal: {
+                          show: false
+                      },
+                      emphasis: {
+                          show: true
+                      }
+                  },
+                  //roseType: 'radius',
+                  radius: [40, 80],
+                  //center: ['50%', '55%'],
+                  data: pieChartData.data,
+                  animationEasing: 'cubicInOut',
+                  animationDuration: 2600
+                }
+              ]
+            }
+          // 为echarts对象加载数据 
+          myChart.setOption(option);
+
+    },
+
+    _queryTotalApply:function(val){
+      // 基于准备好的dom，初始化echarts图表
+      var _self = this;
+      var lineChartData = {
+        xaxis:[],
+        legend:['总申请量','参数确定申请量','竣工验收申请量'],
+         series:[{
+           name: '总申请量', itemStyle: {
+             normal: {
+               color: '#FF005A',
+               lineStyle: {
+                 color: '#FF005A',
+                 width: 2
+               }
+             }
+           },
+           smooth: true,
+           data: [],
+           animationDuration: 2800,
+           animationEasing: 'cubicInOut'
+         },
+         {
+           name: '参数确定申请量',
+           smooth: true,
+           itemStyle: {
+             normal: {
+               color: 'orange',
+               lineStyle: {
+                 color: 'orange',
+                 width: 2
+               },
+             }
+           },
+           data: [],
+           animationDuration: 2800,
+           animationEasing: 'quadraticOut'
+         },
+         {
+           name: '竣工验收申请量',
+           smooth: true,
+           itemStyle: {
+             normal: {
+               color: 'green',
+               lineStyle: {
+                 color: 'green',
+                 width: 2
+               },
+             }
+           },
+           data: [],
+           animationDuration: 2800,
+           animationEasing: 'quadraticOut'
+         }]
+      };
+
+      var startTime,endTime,type;
+      switch(val){
+         case 0:{
+            startTime = Date.now() - 7 * 24 * 3600 * 1000;
+            endTime = Date.now();
+            type = "day";
+            break;
+         }
+         case 1 :{
+           startTime = Date.now() - 30 * 24 * 3600 * 1000;
+           endTime = Date.now();
+           type = "day";
+           break;
+         }
+         case 2 :{
+           startTime = Date.now() - 365 * 24 * 3600 * 1000;
+           endTime = Date.now();
+           type = "month";
+           break;
+         }
+      }
+
+      var date1 = _self.common.formatDate(startTime);
+      var date2 = _self.common.formatDate(endTime);
+
+      _self.ajaxUtil.staticsDate(_self.options.OprUrls.statistics.timeall, date1,date2,type,function(respons) {
+        if (respons.data) {
+
+          for(var i in respons.data){
+           var v = respons.data[i];
+
+           lineChartData.xaxis.push(v.name);
+           lineChartData.series[0].data.push(v.count1);
+           lineChartData.series[1].data.push(v.count2);
+           lineChartData.series[2].data.push(v.count3);
+        }
+
+        _self.initLineOrBarChart("main1",lineChartData,"line","抗震设防项目提交申请量","最近一周");
+        _self.initLineOrBarChart("main2",lineChartData,"bar","抗震设防项目提交申请量","最近一周");
+        //_self.initPieChart("main3");
+
+         
+        }
+      });        
+    },
+
+
+    _queryTotalOver:function(val){
+      // 基于准备好的dom，初始化echarts图表
+      var _self = this;
+      var lineChartData = {
+        xaxis:[],
+        legend:['参数确定发证量','竣工验收发证量'],
+         series:[
+         {
+           name: '参数确定发证量',
+           smooth: true,
+           itemStyle: {
+             normal: {
+               color: 'orange',
+               lineStyle: {
+                 color: 'orange',
+                 width: 2
+               },
+             }
+           },
+           data: [],
+           animationDuration: 2800,
+           animationEasing: 'quadraticOut'
+         },
+         {
+           name: '竣工验收发证量',
+           smooth: true,
+           itemStyle: {
+             normal: {
+               color: 'green',
+               lineStyle: {
+                 color: 'green',
+                 width: 2
+               },
+             }
+           },
+           data: [],
+           animationDuration: 2800,
+           animationEasing: 'quadraticOut'
+         }]
+      };
+
+      var startTime,endTime,type;
+      switch(val){
+         case 0:{
+            startTime = Date.now() - 7 * 24 * 3600 * 1000;
+            endTime = Date.now();
+            type = "day";
+            break;
+         }
+         case 1 :{
+           startTime = Date.now() - 30 * 24 * 3600 * 1000;
+           endTime = Date.now();
+           type = "day";
+           break;
+         }
+         case 2 :{
+           startTime = Date.now() - 365 * 24 * 3600 * 1000;
+           endTime = Date.now();
+           type = "month";
+           break;
+         }
+      }
+
+      var date1 = _self.common.formatDate(startTime);
+      var date2 = _self.common.formatDate(endTime);
+
+      _self.ajaxUtil.staticsDate(_self.options.OprUrls.statistics.timeover, date1,date2,type,function(respons) {
+        if (respons.data) {
+
+          for(var i in respons.data){
+           var v = respons.data[i];
+
+           lineChartData.xaxis.push(v.name);
+           lineChartData.series[0].data.push(v.count1);
+           lineChartData.series[1].data.push(v.count2);
+        }
+
+        _self.initLineOrBarChart("main3",lineChartData,"line","抗震设防项目已发证量","最近一周");
+        _self.initLineOrBarChart("main4",lineChartData,"bar","抗震设防项目已发证量","最近一周");
+        //_self.initPieChart("main3");
+
+         
+        }
+      });        
+    },
+
+    _querySumOver:function(val){
+      // 基于准备好的dom，初始化echarts图表
+      var _self = this;
+    
+      var pieChartData= {
+        title:'抗震设防审批已发证数量',
+        subtitle:'最近一周',
+        legend:['参数确定','竣工验收'],
+        data:[]
+      }
+
+      var startTime,endTime,type;
+      switch(val){
+         case 0:{
+            startTime = Date.now() - 7 * 24 * 3600 * 1000;
+            endTime = Date.now();
+            type = "day";
+            break;
+         }
+         case 1 :{
+           startTime = Date.now() - 30 * 24 * 3600 * 1000;
+           endTime = Date.now();
+           type = "day";
+           break;
+         }
+         case 2 :{
+           startTime = Date.now() - 365 * 24 * 3600 * 1000;
+           endTime = Date.now();
+           type = "month";
+           break;
+         }
+      }
+
+      var date1 = _self.common.formatDate(startTime);
+      var date2 = _self.common.formatDate(endTime);
+
+      _self.ajaxUtil.staticsDate(_self.options.OprUrls.statistics.sumover, date1,date2,type,function(respons) {
+        if (respons.data) {
+
+          pieChartData.data=[
+            {
+              value: respons.data["参数确定"],
+              name:'参数确定'
+            },{
+              value: respons.data["竣工验收"],
+              name:'竣工验收'
+            }
+          ];
+
+        _self.initPieChart("main5",pieChartData,"抗震设防项目发证类型占比","最近一周");
+
+         
+        }
+      });        
+    },
+
     //新闻轮播图
     _queryUpNews:function(){
       var _self = this;
