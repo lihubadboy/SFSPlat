@@ -6,6 +6,8 @@
     _self.common = new common();
     _self._init();
   };
+
+
   Widget.prototype = {
     _init: function() {
       var _self = this;
@@ -25,7 +27,9 @@
       //安居工程
       _self._queryNewsOfProject();
       //创建事件
-      _self._construcEvent()
+      _self._construcEvent();
+
+      _self._queryTotalApply();
     },
     //创建事件
     _construcEvent:function(){
@@ -36,6 +40,89 @@
              window.location.href = 'login.html';
            }
         });
+    },
+
+    _queryTotalApply:function(){
+          // 基于准备好的dom，初始化echarts图表
+    var myChart = echarts.init(document.getElementById('main1'));
+    //var myChart = ec.init(document.getElementById('main'), 'infographic'); //本主题无Y轴标线
+    var option = {
+      title: {
+        text: '全市生产总值(GDP)',
+        subtext: '数据来源:西安市统计局     单位:亿元',
+        textStyle: {
+          fontWeight: 'normal',
+          fontFamily: 'Microsoft YaHei',
+          fontSize: 18,
+          color: '#666'
+        }
+      },
+      tooltip: {
+        show: true,
+        trigger: 'axis'
+      },
+      legend: {
+        bottom: '0',
+        y: 'bottom',
+        data: ['GDP', '第一产业', '第二产业', '第三产业']
+      },
+      toolbox: {
+        show: true,
+        feature: {
+          magicType: {
+            show: true,
+            type: ['bar', 'line']
+          },
+          restore: {
+            show: true
+          }
+        }
+      },
+      //calculable: true,
+      xAxis: [{
+        type: 'category',
+        data: ['2010年', '2011年', '2012年', '2013年', '2014年', '2015年', '2016年', '17年1-3月'],
+        axisLabel: {
+          interval: 0,
+          //横轴信息全部显示
+          rotate: 0
+        }
+      }],
+      yAxis: [{
+        type: 'value',
+        splitArea: {
+          show: true
+        },
+        scale: true,
+        min: 0,
+        max: 8000
+      }],
+      series: [{
+        name: 'GDP',
+        type: 'bar',
+        data: [3241.69, 3862.58, 4369.37, 4884.13, 5474.77, 5810.03,6257.18,1303.18]
+      },
+      {
+        name: '第一产业',
+        type: 'bar',
+        stack: '生产总值',
+        data: [140.06, 173.14, 195.59, 217.76, 214.55, 220.20, 232.01,31.91]
+      },
+      {
+        name: '第二产业',
+        type: 'bar',
+        stack: '生产总值',
+        data: [1409.53, 1697.16, 1893.79, 2117.66, 2205.37, 2165.54,2197.81,432.91]
+      },
+      {
+        name: '第三产业',
+        type: 'bar',
+        stack: '生产总值',
+        data: [1691.91, 1993.91, 2279.99, 2548.71, 3054.85, 3424.29,3827.36,838.36]
+      }]
+    };
+    // 为echarts对象加载数据 
+    myChart.setOption(option);
     },
     //新闻轮播图
     _queryUpNews:function(){
