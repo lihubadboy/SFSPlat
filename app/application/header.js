@@ -84,7 +84,7 @@
        html += '<a href="#" target="_blank" class="username">欢迎 ，陈波</a>';
        html += '<ul class="language">';
        html += '<li><a href="mycontent.html"><i class="fa fa-user"></i>&nbsp;个人中心</a></li>';
-       html += '<li><a href="login.html"><i class="fa fa-sign-out"></i>&nbsp;退出</a></li>';
+       html += '<li  class="signout"><a href="#"><i class="fa fa-sign-out"></i>&nbsp;退出</a></li>';
        html += '</ul>';
        html += '</li>';
 
@@ -95,6 +95,11 @@
        html += '</div>';
        html += '</div>';
        $('.topbar-v3').html(html);
+       $('.signout').on('click',function(){
+         sessionStorage.removeItem("username");
+         sessionStorage.removeItem("token");
+         window.location.href = 'index.html';
+       })
     },
     _buildTopNavbar:function(){
       var html = '';
