@@ -113,7 +113,7 @@
        var html = '';
        news.forEach(function(element,index){
         html += '<li class="col-md-10 padding-0" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">';
-        html += '<a class="default" title="'+ element.title +'" href="pageContent.html?id='+ element.id +'&type=news" target="_blank">';
+        html += '<a class="default" title="'+ element.title +'" href="pageContent.html?id='+ element.id +'&type=news" style="list-style:none;" target="_blank">';
         html += '<span class="color-green" style="font-weight:700;">';
         html += '•';
         html += ' </span>';
@@ -138,7 +138,7 @@
        var html = '';
        notice.forEach(function(element,index){
         html += '<li class="col-md-10 padding-0" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">';
-        html += '<a class="default" title="'+ element.title +'" href="pageContent.html?id='+ element.id +'" target="_blank">';
+        html += '<a class="default" title="'+ element.title +'" href="pageContent.html?id='+ element.id +'" style="list-style:none;" target="_blank">';
         html += '<span class="color-green" style="font-weight:700;">';
         html += '•';
         html += ' </span>';
